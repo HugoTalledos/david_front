@@ -11,3 +11,12 @@ export async function getToken({ email, password, type }) {
   const { data } = await res.json();
   return data;
 }
+
+export async function sigout() {
+  const res = await fetch(`${url}/logout`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`}
+  });
+
+  if (!res.ok) throw new Error('Fallo');
+}
