@@ -16,6 +16,7 @@ const ViewSet = () => {
       setGroup({ songsConfig, ...all });
       setSongsConfig(songsConfig);
     })
+    .catch((e) => console.log(e));
   }, [setId]);
 
   const selectSong = (configId) => {

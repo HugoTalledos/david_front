@@ -1,22 +1,13 @@
-import { REACT_APP_API_URL } from '../config';
-const url = `${REACT_APP_API_URL}/auth`;
+import { api, escalateError, getResponseData } from './index';
 
 export async function getToken({ email, password, type }) {
-  const res = await fetch(url, {
-    method: 'POST',
-    body: JSON.stringify({ email, password, type }),
-    headers: { 'Content-Type': 'application/json' },
-  });
-  if (!res.ok) throw new Error('Something went wrong');
-  const { data } = await res.json();
-  return data;
+  return api.post('/auth', { email, password, type })
+    .then(getResponseData)
+    .catch(escalateError);
 }
 
 export async function sigout() {
-  const res = await fetch(`${url}/logout`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`}
-  });
-
-  if (!res.ok) throw new Error('Fallo');
+  return api.post('/auth/logout', null, {  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`} })
+    .then(getResponseData)
+    .catch(escalateError);
 }

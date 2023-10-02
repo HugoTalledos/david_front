@@ -23,12 +23,16 @@ const CreateSet = () => {
   };
 
   const saveSet = async () => {
-    const sendRequest = await createSet({
-      title,
-      description,
-      songList
-    });
-    console.log(sendRequest);
+    try {
+      const sendRequest = await createSet({
+        title,
+        description,
+        songList
+      });
+      console.log(sendRequest);
+    } catch (e) {
+      console.log(e);
+    }
   }
   return(<>
   <section className="flex min-h-screen flex-col ml-64 p-10">

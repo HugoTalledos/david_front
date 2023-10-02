@@ -13,14 +13,18 @@ const Modal = ({ isOpen, onClose, onAdd }) => {
     const term = text.split(' ');
     if (term.length <= 1) return;
 
-    const [song] = await findSong(text);
-    const { resource, singer, songName, tempo, tonality, songId } = song;
-    setTonality(tonality);
-    setTempo(tempo);
-    setResource(resource);
-    setSinger(singer);
-    setName(songName);
-    setSongId(songId);
+    try {
+      const [song] = await findSong(text);
+      const { resource, singer, songName, tempo, tonality, songId } = song;
+      setTonality(tonality);
+      setTempo(tempo);
+      setResource(resource);
+      setSinger(singer);
+      setName(songName);
+      setSongId(songId);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (<>
