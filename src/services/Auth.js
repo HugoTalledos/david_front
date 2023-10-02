@@ -7,7 +7,7 @@ export async function getToken({ email, password, type }) {
 }
 
 export async function sigout() {
-  return api.post('/auth/logout', null, {  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`} })
+  return api.post('/auth/logout', {}, {  headers: { 'Authorization': `Bearer ${sessionStorage.getItem('jwtToken')}`} })
     .then(getResponseData)
     .catch(escalateError);
 }
