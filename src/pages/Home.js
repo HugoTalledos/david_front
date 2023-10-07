@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import NotificationContext from '../context/notification-context';
+
 import { getSets } from '../services/Set';
 const Home = () => {
+  const { dispatchData } = useContext(NotificationContext);
   const [sets, setSets] = useState([]);
 
   useEffect(() => {
     Promise.all([getSets()])
     .then(([data]) => setSets(data))
-    .catch((e) => console.log(e));
+    .catch(() => dispatchData({ type: 'danger', text: 'Ocurrio un error obteniendo los sets. Intenta mas tarde.' }));
   }, []);
 
   

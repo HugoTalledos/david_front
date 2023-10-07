@@ -1,9 +1,12 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getSetById } from "../services/Set";
+import NotificationContext from '../context/notification-context';
+
 import Song from "../components/Song";
 
 const ViewSet = () => {
+  const { dispatchData } = useContext(NotificationContext);
   const [setId] = useState(useParams().setId);
   const [group, setGroup] = useState({});
   const [config, setConfig] = useState(null);
@@ -16,7 +19,7 @@ const ViewSet = () => {
       setGroup({ songsConfig, ...all });
       setSongsConfig(songsConfig);
     })
-    .catch((e) => console.log(e));
+    .catch((e) => dispatchData({ type: 'danger', text: 'Ocurrio un error, por favor intenta más tarde.' }));
   }, [setId]);
 
   const selectSong = (configId) => {

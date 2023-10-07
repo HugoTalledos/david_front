@@ -1,9 +1,11 @@
 'use client';
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Modal from "../components/Modal";
 import { createSet } from '../services/Set';
+import NotificationContext from '../context/notification-context';
 
 const CreateSet = () => {
+  const { dispatchData } = useContext(NotificationContext);
   const [title, setTitle] = useState(`Set - ${(new Date()).toUTCString()}`);
   const [description, setDescription] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -24,14 +26,14 @@ const CreateSet = () => {
 
   const saveSet = async () => {
     try {
-      const sendRequest = await createSet({
+      await createSet({
         title,
         description,
         songList
       });
-      console.log(sendRequest);
+      dispatchData({ type: 'success', text: 'Set creado exitosamente' });
     } catch (e) {
-      console.log(e);
+      dispatchData({ type: 'error', text: 'Ocurrio un error creando el set.' });
     }
   }
   return(<>
