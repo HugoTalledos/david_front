@@ -17,10 +17,14 @@ function App() {
     <Router history={history}>
       <NotificationContext>
         { user && <SideBar /> }
+        { user && 
+          <Routes>
+            <Route exact path='/create' element={<CreateSet />} />
+          </Routes>
+        }
         <Routes>
           <Route exact path='/' element={ user ? <Home /> : <Login />} />
           <Route exact path='/view/:setId' element={<ViewSet />} />
-          <Route exact path='/create' element={<CreateSet />} />
         </Routes>
         <Notification />
       </NotificationContext>
