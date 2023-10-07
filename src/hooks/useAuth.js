@@ -7,8 +7,16 @@ const useAuth = () => {
       sessionStorage.setItem('jwtToken', token);
       sessionStorage.setItem('userInfo', JSON.stringify(user));
       window.location.reload();
+      return {
+        status:true,
+        message: '¡Bienvenido de vuelta!'
+      }
     } catch (e) {
-      console.log(e);
+      console.log('🚀 ~ file: useAuth.js:15 ~ login ~ e:', e);
+      return {
+        status: false,
+        message: 'Usuario o contraseña equivocada'
+      }
     }
   }
 
