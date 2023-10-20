@@ -17,3 +17,15 @@ export async function createSet({ title, description, songList }) {
     .then(getResponseData)
     .catch(escalateError);
 }
+
+export async function updateSet({ setId, title, description, songList }) {
+  return api.put('/sets', { setId, setName: title, setDescription: description, songList })
+    .then(getResponseData)
+    .catch(escalateError);
+}
+
+export async function deleteSet({ setId }) {
+  return api.delete(`/sets/${setId}`)
+    .then(getResponseData)
+    .catch(escalateError)
+}

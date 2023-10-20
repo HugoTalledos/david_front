@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
+import { deleteSet } from '../services/Set';
 import NotificationContext from '../context/notification-context';
 import Card from '../components/Card';
 
@@ -11,10 +12,20 @@ const Home = () => {
     Promise.all([getSets()])
     .then(([data]) => setSets(data))
     .catch(() => dispatchData({ type: 'danger', text: 'Ocurrio un error obteniendo los sets. Intenta mas tarde.' }));
-  }, []);
+  }, [dispatchData]);
 
-  const deleteSet = (setId) => {
-    console.log(setId)
+  const actionDeleteSet = (set) => {
+    const { setId } = set;
+    let setAux = sets;
+    return Promise.all([deleteSet({ setId })])
+      .then(() => { 
+        dispatchData({ type: 'success', text: 'Set eliminado exitosamente.' });
+        const setIndex = sets.indexOf(set);
+        const firstPart = setAux.slice(0, setIndex);
+        const lastPart = setAux.slice(setIndex + 1, setIndex.lenght);
+        setSets([...firstPart, ...lastPart]);        
+      })
+      .catch(() => dispatchData({ type: 'danger', text: 'Error creando eliminando set. intente mas tarde' }))
   }
   
   return (
@@ -26,7 +37,10 @@ const Home = () => {
             <a href='/create' className="ml-auto py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Crear Set</a>    
           </div>
           <div className="flex mt-4 space-x-3 md:mt-6">
-            { (sets || []).map((props) => (<Card {...props} onDelete={() => deleteSet(props.setId)} />)) }
+            { 
+              (sets || []).map((props) => 
+                (<Card key={props.setId} {...props} onDelete={() => actionDeleteSet(props)} />))
+            }
           </div>
         </div>
       </div>

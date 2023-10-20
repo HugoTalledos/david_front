@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { REACT_APP_STRAPPI_URL } from '../config';
 import { findSong  } from '../services/Song';
 
 const Modal = ({ isOpen, onClose, onAdd }) => {
@@ -103,7 +104,9 @@ const Modal = ({ isOpen, onClose, onAdd }) => {
                     type="submit"
                     className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Agregar</button>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-300">
-                ¿No encuentras tu canción? <a href="#" className="text-blue-700 hover:underline dark:text-blue-500">Crear canción</a>
+                ¿No encuentras tu canción?
+                <a href={`${REACT_APP_STRAPPI_URL}/admin/content-manager/collectionType/api::song.song?page=1&pageSize=10&sort=so_name:ASC&user=${sessionStorage.getItem("userInfo")}&token=${sessionStorage.getItem("jwtToken")}`}
+                  className="text-blue-700 hover:underline dark:text-blue-500">Crear canción</a>
               </div>
           </form>
         </div>

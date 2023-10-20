@@ -26,7 +26,7 @@ const Card = ({ setId, setName, songsConfig, setDescription, onDelete }) => {
                 Ver</a>
             </li>
             <li>
-              <span onClick={onDelete} className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Eliminar</span>
+              <button onClick={onDelete} className="block px-4 py-2 w-full text-left text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Eliminar</button>
             </li>
           </ul>
         </div>

@@ -20,6 +20,7 @@ function App() {
         { user && 
           <Routes>
             <Route exact path='/create' element={<CreateSet />} />
+            <Route exact path='/edit/:setId' element={<CreateSet />} />
           </Routes>
         }
         <Routes>
