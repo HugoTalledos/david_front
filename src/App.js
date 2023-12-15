@@ -15,7 +15,7 @@ import ViewSongs from './pages/ViewSongs';
 import { Theme } from 'leita-components-ui';
 
 function App() {
-  const user = sessionStorage.getItem('userInfo'); 
+  const user = localStorage.getItem('us'); 
   const history = createBrowserHistory();
   return (
     <Theme

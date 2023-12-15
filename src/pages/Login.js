@@ -15,6 +15,8 @@ const Login = () => {
     const { success, message } = await signIn(email, password);
     dispatchData({ type: success ? 'success' : 'danger', text: message });
     setIsDisabled(false);
+
+    if (success) window.location.reload();
   }
 
   return (<>
