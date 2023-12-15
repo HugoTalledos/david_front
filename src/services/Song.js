@@ -11,3 +11,9 @@ export async function findSong(songName) {
     .then(getResponseData)
     .catch(escalateError);
 }
+
+export async function getAllSongs() {
+  return api.post('/songs/all', { limit: 20, orderKey: 'songName', order: 'asc' })
+    .then(getResponseData)
+    .catch(escalateError);
+}

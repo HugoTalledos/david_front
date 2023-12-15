@@ -1,32 +1,40 @@
-import { getToken, sigout } from "../services/Auth";
+import firebase from '../utils/firebase';
+import { getUser } from "../services/Auth";
 
-const useAuth = () => {
-  const login = async (email, password, typeUser) => {
+export default function useAuth() {
+  const validateUser = () => new Promise((resolve, reject) => {
+    const userId = firebase.auth().currentUser.uid;
+    Promise.all([
+      firebase.auth().currentUser.getIdToken(),
+      getUser({ userId }),
+    ])
+      .then(([token, user]) => {
+        localStorage.setItem('us', JSON.stringify({ ...user }));
+        localStorage.setItem('token', token);
+        resolve('¡Bienvenido de  vuelta!');
+      })
+      .catch(() => reject('Usuario o contraseña incorrecta'));
+  });
+
+  const signIn = async (email, password) => Promise.all([
+    firebase.auth().signInWithEmailAndPassword(email, password),
+  ])
+    .then(async () => validateUser()
+      .then((response) => ({ success: true, message: response }))
+      .catch((err) => ({ success: false, message: err })))
+    .catch(() => ({ success: false, message: 'Error inesperado, intente mas tarde' }));
+
+  const signOut = () => {
     try {
-      const { token, user } = await getToken({ email, password, type: typeUser });
-      sessionStorage.setItem('jwtToken', token);
-      sessionStorage.setItem('userInfo', JSON.stringify(user));
-      window.location.reload();
-      return {
-        status:true,
-        message: '¡Bienvenido de vuelta!'
-      }
-    } catch (e) {
-      console.log('🚀 ~ file: useAuth.js:15 ~ login ~ e:', e);
-      return {
-        status: false,
-        message: 'Usuario o contraseña equivocada'
-      }
+      localStorage.clear();
+      firebase.auth().signOut();
+      window.location.href = '/';
+    } catch (e) { // an error
     }
-  }
-
-  const logout = async () => {
-    await sigout();
-    sessionStorage.clear();
-    window.location.reload();
   };
 
-  return { login, logout }
-};
-
-export default useAuth;
+  return {
+    signIn,
+    signOut,
+  };
+}

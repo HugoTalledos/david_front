@@ -1,4 +1,14 @@
+import { useEffect, useState } from "react";
+import { getAllSongs } from "../services/Song";
+
 const ViewSongs = () => {
+  const [songList, setSongList] = useState([]);
+
+  useEffect(() => {
+    Promise.all([getAllSongs()])
+    .then(([resp]) =>  setSongList([...resp.map((song) => song)]))
+  }, []);
+
   return(<>
   <section className="flex min-h-screen flex-col ml-64 p-10">
       <div className="p-4">

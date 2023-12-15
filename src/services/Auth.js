@@ -1,7 +1,7 @@
 import { api, escalateError, getResponseData } from './index';
 
-export async function getToken({ email, password, type }) {
-  return api.post('/auth', { email, password, type })
+export async function getUser({ userId }) {
+  return api.post('/auth', { userId })
     .then(getResponseData)
     .catch(escalateError);
 }
