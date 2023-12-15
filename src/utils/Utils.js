@@ -12,3 +12,13 @@ export const readBuffer = async (file) => new Promise(
     readerBuffer.readAsArrayBuffer(file);
   },
 );
+
+export const sessionConfig = () => {
+  const user = JSON.parse(localStorage.getItem('us'));
+  const token = localStorage.getItem('token');
+
+  return {
+    ...user,
+    token,
+  };
+};

@@ -3,7 +3,7 @@ import './App.css';
 import Home from './pages/Home';
 import { createBrowserHistory } from 'history';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import SideBar from './components/SideBar';
+import Header from './components/Header';
 import ViewSet from './pages/ViewSet';
 import CreateSet from './pages/CreateSet';
 import CreateSong from './pages/CreateSong';
@@ -32,7 +32,7 @@ function App() {
     <div className='main-container'>
       <Router history={history}>
         <NotificationContext>
-          { user && <SideBar /> }
+          { user && <Header /> }
           { user && 
             <Routes>
               <Route exact path='/create/set' element={<CreateSet />} />
