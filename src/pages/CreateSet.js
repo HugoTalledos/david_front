@@ -18,32 +18,23 @@ const CreateSet = () => {
   const [allSongs, setAllSongs] = useState([]);
   const [termValue, setTermValue] = useState('');
   const [loading, setLoading] = useState(false);
-  const [songsResponse, setSongsResponse] = useState(null);
 
   useEffect(() => {
     setLoading(true);
     if (setId) {
       Promise.all([getSetById(setId)])
       .then(([resp]) => {
-        const { setDescription: desc, setName: name, songIdList } = resp;
+        const { setDescription: desc, setName: name, songConfig } = resp;
         setDescription(desc);
         setTitle(name);
-        setSongsResponse([...songIdList]);
+        setSongList([...songConfig]);
       })
       .catch(() => dispatchData({ type: 'danger', text: 'Error consultando el set. intente mas tarde' }))
     }
-  }, [setId, dispatchData]);
-  
-  useEffect(() => {
     getAllSongs()
-    .then((data) => {
-      if (songsResponse) {
-        setSongList([...data.filter((song) => songsResponse.includes(song.songId))]);
-      } 
-      setAllSongs([...data])
-    })
+    .then((data) => setAllSongs([...data]))
     .finally(() => setLoading(false));
-  }, [songsResponse]);
+  }, [setId, dispatchData]);
 
   useEffect(() => {
     setFilterSong(allSongs.filter((current) => {
@@ -67,7 +58,6 @@ const CreateSet = () => {
   const saveSet = async () => {
 
     const body = { title, description, songList };
-
     if (setId) {
       try {
         await updateSet({ setId, ...body});
@@ -82,6 +72,7 @@ const CreateSet = () => {
     try {
       await createSet(body);
       dispatchData({ type: 'success', text: 'Set creado exitosamente' });
+      window.location.href = '/';
     } catch (e) {
       dispatchData({ type: 'error', text: 'Ocurrio un error creando el set.' });
     }
