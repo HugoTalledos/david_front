@@ -16,12 +16,12 @@ const Card = ({ setId, setName, songsConfig, setDescription, onDelete }) => {
              className={`z-10 ${ open ? '' : 'hidden' } text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}>
           <ul className="py-2" aria-labelledby="dropdownButton">
             <li>
-              <a href={`/edit/${setId}`}
+              <a href={`/edit/set/${setId}`}
                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
                 Editar</a>
             </li>
             <li>
-              <a  href={`/view/${setId}`}
+              <a  href={`/view/set/${setId}`}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
                 Ver</a>
             </li>

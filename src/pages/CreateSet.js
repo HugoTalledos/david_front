@@ -14,29 +14,38 @@ const CreateSet = () => {
   const [songList, setSongList] = useState([]);
   const [filterSong, setFilterSong] = useState(null);
   const [auxList, setAuxList] = useState([]);
-  const [configObject, setConfigObject] = useState({});
+
   const [allSongs, setAllSongs] = useState([]);
   const [termValue, setTermValue] = useState('');
   const [loading, setLoading] = useState(false);
+  const [songsResponse, setSongsResponse] = useState(null);
 
   useEffect(() => {
     setLoading(true);
     if (setId) {
       Promise.all([getSetById(setId)])
       .then(([resp]) => {
-        setConfigObject(resp);
-        setAuxList(resp.songsConfig);
-        setSongList(resp.songsConfig);
+        const { setDescription: desc, setName: name, songIdList } = resp;
+        setDescription(desc);
+        setTitle(name);
+        setSongsResponse([...songIdList]);
       })
       .catch(() => dispatchData({ type: 'danger', text: 'Error consultando el set. intente mas tarde' }))
     }
-    getAllSongs()
-    .then((data) => setAllSongs([...data]))
-    .finally(() => setLoading(false));
   }, [setId, dispatchData]);
+  
+  useEffect(() => {
+    getAllSongs()
+    .then((data) => {
+      if (songsResponse) {
+        setSongList([...data.filter((song) => songsResponse.includes(song.songId))]);
+      } 
+      setAllSongs([...data])
+    })
+    .finally(() => setLoading(false));
+  }, [songsResponse]);
 
   useEffect(() => {
-    console.log(termValue)
     setFilterSong(allSongs.filter((current) => {
       const regex = new RegExp(termValue.toLocaleLowerCase());
       return current.songName.toLocaleLowerCase().match(regex);
@@ -57,11 +66,7 @@ const CreateSet = () => {
 
   const saveSet = async () => {
 
-    const body = {
-      title: configObject.setName || title,
-      description: configObject.setDescription || description,
-      songList
-    };
+    const body = { title, description, songList };
 
     if (setId) {
       try {
@@ -93,7 +98,7 @@ const CreateSet = () => {
         <TextArea
           onChange={(e) => setDescription(e.target.value)}
           label="Notas"
-          value={configObject.setDescription || description}
+          value={description}
         />
         <div className="song-section">
           <h1 className="text-5xl font-extrabold dark:text-white">Canciones</h1>
