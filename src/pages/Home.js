@@ -32,7 +32,6 @@ const Home = () => {
   }
   
   return (
-    <main className="flex h-[90vh] overflow-hidden flex-col ml-64 p-10">
       <div className="p-4 h-full">
         <div className="p-4 h-full border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
           <div className="flex items-start mt-4 md:mt-6">
@@ -52,8 +51,7 @@ const Home = () => {
             </div>
           }
         </div>
-      </div>
-    </main>);
+      </div>);
 }
 
 

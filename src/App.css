@@ -3,7 +3,14 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  height: 90vh;
+  height: 100vh;
+}
+
+.invisible-textfield {
+  font-size: 40px;
+  font-weight: bold;
+  width: 90%;
+  background: bottom;
 }
 
 @media only screen and (max-width: 767px){

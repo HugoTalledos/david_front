@@ -3,13 +3,13 @@ import { useState, useEffect, useContext } from "react";
 import { Buffer } from 'buffer';
 import NotificationContext from '../context/notification-context';
 import SingerApi from "../services/Singer";
-import { createSong } from "../services/Song";
+import { createSong, updateSong, getSongById } from "../services/Song";
 import { markToHTML, readBuffer } from '../utils/Utils';
 import { tonalities, tonalityTypes } from "../utils/constants";
-import Load from '../components/Load';
 
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { Button, Select, TextField } from "leita-components-ui";
 
 const CreateSong = () => {
   const [songId] = useState(useParams().songId);
@@ -23,7 +23,6 @@ const CreateSong = () => {
   const [lyrics, setLyrics] = useState('');
   const [chords, setChords] = useState('');
   const [multitrack, setMultitrack] = useState('');
-  const [configObject, setConfigObject] = useState({});
   const [loading, setLoading]  =useState(false);
 
   const { dispatchData } = useContext(NotificationContext);
@@ -39,21 +38,34 @@ const CreateSong = () => {
 
   useEffect(() => {
     if (songId) {
-     /* Promise.all([getSetById(setId)])
-      .then(([resp]) => {
-        setConfigObject(resp);
-        setAuxList(resp.songsConfig);
-        setSongList(resp.songsConfig);
+      Promise.all([getSongById(songId)])
+      .then(([{
+        songName, songTempo, songTonality,
+        singerId, songResource, songChords }]) => {
+        const regexTon = new RegExp(`[${tonalities.toString()}]`);
+        const regexComp = new RegExp(`[${tonalityTypes.toString()}]`);
+        const [, comple] = songTonality.split(regexTon);
+        const [ton] = songTonality.split(regexComp);
+        setTitle(songName);
+        setTempo(songTempo);
+        setResource(songResource);
+        setChords(songChords);
+        setSinger(singerId);
+        setTonality(ton);
+        setComplement(comple);
       })
-      .catch(() => dispatchData({ type: 'danger', text: 'Error consultando el set. intente mas tarde' }))*/
+      .catch(() => dispatchData({ type: 'danger', text: 'Error consultando el set. intente mas tarde' }))
     }
   }, [songId, dispatchData]);
 
   const saveSong = () => {
     setLoading(true);
+    const [{singerId, singerName}] = singerList.filter((current) => current.singerId === singer);
     const body =  {
+      songId,
       songName: title,
-      singerId: singer,
+      singerId,
+      singerName,
       songTempo: tempo,
       songTonality: `${tonality}${complement}`,
       bufferList: multitrack,
@@ -61,8 +73,10 @@ const CreateSong = () => {
       songLyrics: lyrics,
       songChords:chords
     }
+    
+    let promise = songId ? updateSong(body) : createSong(body);
 
-    return Promise.all([createSong(body)])
+    return Promise.all([promise])
     .then(([resp]) => {
       dispatchData({ type: 'success', text: 'Canción creada exitosamente' })
       setTitle('Nueva canción');
@@ -105,65 +119,58 @@ const CreateSong = () => {
   };
 
   return(<>
-    <section className="flex min-h-screen flex-col ml-64 p-10">
       <div className="p-4">
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
-          <div className="flex items-start mt-4 md:mt-6 pb-5">
-            <h1 className="text-5xl font-extrabold dark:text-white" onInput={(e) => setTitle(e.currentTarget.textContent)} contenteditable="true">{ configObject.setName || title }</h1>
-            <button type="button" onClick={() => saveSong()} className="ml-auto py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-full border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-              {
-                loading
-                ? <Load />
-                : <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 19">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m9 12 5.419 3.871A1 1 0 0 0 16 15.057V2.943a1 1 0 0 0-1.581-.814L9 6m0 6V6m0 6H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h7m-5 6h3v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-5Zm15-3a3 3 0 0 1-3 3V6a3 3 0 0 1 3 3Z"/>
-                </svg>
-              }
-            </button>    
+          <div className="flex items-center mt-4 md:mt-6 pb-5">
+            <input className='invisible-textfield' value={title} onChange={(e) => setTitle(e.currentTarget.value)}/>
+            <Button
+              loading={loading}
+              onClick={() => saveSong()}
+              icon='check'
+              label='Guardar'
+              type="dark-outline"
+            />
           </div>
           <div className="grid gap-6 mb-6 md:grid-cols-3">
+            <TextField
+              label="BPM"
+              onChange={(e) => setTempo(e.target.value)}
+              type="number"
+              value={tempo}
+            />
             <div>
-              <label for="tempo" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">BPM</label>
-              <input type="number"
-                     min={60}
-                     disabled={loading}
-                     value={tempo}
-                     onChange={(e) => setTempo(e.target.value)}
-                     id="tempo"
-                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="120" required />
-            </div>
-            <div>
-                <label for="tonality" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tonalidad</label>
-                <select id="tonality"
-                        disabled={loading}
-                        onChange={(e) => setTonality(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                  <option selected> </option>
-                  { tonalities.map((ton) => (<option value={ton}>{ ton }</option>)) }
-                </select>
-                <select id="tonality"
-                        disabled={loading}
-                        onChange={(e) => setComplement(e.target.value)}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                  <option selected> </option>
-                  { tonalityTypes.map((ton) => (<option value={ton}>{ ton }</option>)) }
-                </select>
-            </div>
-            <div>
-              <label for="singer" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Cantante</label>
-              <select id="Singer"
-                      disabled={loading}
-                      onChange={(e) => setSinger(e.target.value)}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option selected>Selecciona un cantante</option>
-                {
-                  (singerList || singerList.length > 0)
-                  && singerList.map(({ singerId, singerName }) => (
-                    <option value={singerId}>{ singerName }</option>
-                  ))
+                <Select
+                  onChange={(e) => setTonality(e.target.value)}
+                  disabled={loading}
+                  label="Tonalidad"
+                  value={tonality}
+                  options={[
+                    { value: null, label: '--Selecciona una nota --'},
+                    ...tonalities.map((ton) => ({ value: ton, label: ton }))
+                  ]}
+                />
 
-                }
-              </select>
-            </div>  
+                <Select
+                  disabled={loading}
+                  onChange={(e) => setComplement(e.target.value)}
+                  label="Alteración"
+                  options={[
+                    { value: null, label: ''},
+                    ...tonalityTypes.map((ton) => ({ value: ton, label: ton }))
+                  ]}
+                  value={complement}
+                />
+            </div>
+            <Select
+              onChange={(e) => setSinger(e.target.value)}
+              label="Cantante"
+              options={
+                [
+                  { value: null, label: 'Selecciona un cantante' },
+                  ...singerList.map(({singerId, singerName}) => ({ value: singerId, label: singerName }))
+                ]}
+              value={singer}
+            />
           </div>
           <div className="grid gap-6 mb-6 md:grid-cols-2">
             <div className="mb-6">
@@ -200,7 +207,6 @@ const CreateSong = () => {
           </div>
         </div>
       </div>
-    </section>
   </>);
 }
 

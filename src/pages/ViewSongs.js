@@ -1,16 +1,32 @@
-import { useEffect, useState } from "react";
-import { getAllSongs } from "../services/Song";
+import { useEffect, useState, useContext } from "react";
+import NotificationContext from '../context/notification-context';
+import { getAllSongs, deleteSongById } from "../services/Song";
 
 const ViewSongs = () => {
   const [songList, setSongList] = useState([]);
 
+  const { dispatchData } = useContext(NotificationContext);
+
   useEffect(() => {
     Promise.all([getAllSongs()])
     .then(([resp]) =>  setSongList([...resp.map((song) => song)]))
+    .catch(() => dispatchData({ type: 'danger', text: 'Error obteniendo canciones. Intente mas tarde' }))
   }, []);
 
+  const deleteSong = async (songId, status) => {
+    try {
+      const resp = await deleteSongById(songId, !status);
+      setSongList((songFilter) => [...songFilter].map((t) => {
+        if (t.songId === songId) return ({ ...resp, status: !status });
+        return t;
+      }));
+      dispatchData({ type: 'success', text: 'El estado de la canción cambio exitosamente.' })
+    } catch (error) {
+      dispatchData({ type: 'danger', text: 'Error eliminando canción. Intente mas tarde' })
+    }
+  };
+
   return(<>
-  <section className="flex min-h-screen flex-col ml-64 p-10">
       <div className="p-4">
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
           <div className="flex items-start mt-4 md:mt-6 pb-5">
@@ -34,45 +50,25 @@ const ViewSongs = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        Apple MacBook Pro 17"
-                      </th>
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        Apple MacBook Pro 17"
-                      </th>
-                      <td className="px-6 py-4">Silver</td>
-                      <td className="px-6 py-4">
-                        <a href={`/edit/song/id`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-5">Editar</a>
-                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Eliminar</a>
-                      </td>
-                    </tr>
-                    <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        Apple MacBook Pro 17"
-                      </th>
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        Apple MacBook Pro 17"
-                      </th>
-                      <td className="px-6 py-4">Silver</td>
-                      <td className="px-6 py-4">
-                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-5">Editar</a>
-                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Eliminar</a>
-                      </td>
-                    </tr>
-                    <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        Apple MacBook Pro 17"
-                      </th>
-                      <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        Apple MacBook Pro 17"
-                      </th>
-                      <td className="px-6 py-4">Silver</td>
-                      <td className="px-6 py-4">
-                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-5">Editar</a>
-                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Eliminar</a>
-                      </td>
-                    </tr>
+                    {
+                      songList.map(({ songId, songName, singerName, status }) => (
+                        <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            { songName }
+                          </th>
+                          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            { singerName }
+                          </th>
+                          <td className="px-6 py-4">{ status ? 'Activa': 'Eliminada'}</td>
+                          <td className="px-6 py-4">
+                            <a href={`/edit/song/${songId}`} className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-5">Editar</a>
+                            <button
+                              onClick={() => deleteSong(songId, status)} 
+                              className="font-mediumtext-blue-600 dark:text-blue-500 hover:underline">Eliminar</button>
+                          </td>
+                        </tr>
+                      ))
+                    }
                   </tbody>
                 </table>
               </div>
@@ -80,7 +76,6 @@ const ViewSongs = () => {
           </div>
         </div>
       </div>
-    </section>
   </>);
 }
 
