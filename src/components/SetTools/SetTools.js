@@ -5,7 +5,7 @@ import tickOgg from '../../assets/tick.ogg';
 import tickMp3 from '../../assets/tick.mp3';
 import './SetTools.css'
 
-const SetTools = ({ songTempo, reference, showLyrics }) =>{
+const SetTools = ({ songTempo, songResource, showLyrics }) =>{
   const [onlyLyrics, setOnlyLyrics] = useState(false);
   const [active, setActive] = useState(false);
   const audioRef = useRef();
@@ -22,8 +22,8 @@ const SetTools = ({ songTempo, reference, showLyrics }) =>{
       type="dark-outline"
       onClick={() => setActive(!active)}
     />
-    <Button type="dark-outline" disabled={!reference}>
-      <a href={reference} rel='noreferrer' target='_blank'>Referencia</a>
+    <Button type="dark-outline" disabled={!songResource}>
+      <a href={songResource} rel='noreferrer' target='_blank'>Referencia</a>
     </Button>
     <Button
       disabled={!songTempo}
