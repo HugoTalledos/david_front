@@ -30,7 +30,7 @@ function App() {
     fontFamily={['Raleway', 'BlinkMacSystemFont', 'Segoe UI']}
   >
     <div className='main-container'>
-      <main className="flex h-[90vh] flex-col w-full mt-10 p-10">
+      <main className="flex h-[90vh] flex-col w-full p-10">
         <Router history={history}>
           <NotificationContext>
             { user && <Header /> }
