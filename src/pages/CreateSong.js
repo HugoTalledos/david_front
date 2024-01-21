@@ -4,7 +4,7 @@ import { Buffer } from 'buffer';
 import NotificationContext from '../context/notification-context';
 import SingerApi from "../services/Singer";
 import { createSong, updateSong, getSongById } from "../services/Song";
-import { markToHTML, readBuffer } from '../utils/Utils';
+import { loadSound, markToHTML, readBuffer } from '../utils/Utils';
 import { tonalities, tonalityTypes } from "../utils/constants";
 
 import ReactQuill from 'react-quill';
@@ -58,9 +58,11 @@ const CreateSong = () => {
     }
   }, [songId, dispatchData]);
 
-  const saveSong = () => {
+  const saveSong = async () => {
     setLoading(true);
-    const [{singerId, singerName}] = singerList.filter((current) => current.singerId === singer);
+    const [{singerId, singerName}] = singerList.filter((current) => current.singerId === singer);    
+    const url = await loadSound(multitrack);
+
     const body =  {
       songId,
       songName: title,
@@ -68,12 +70,12 @@ const CreateSong = () => {
       singerName,
       songTempo: tempo,
       songTonality: `${tonality}${complement}`,
-      bufferList: multitrack,
       songResource: resource,
       songLyrics: lyrics,
-      songChords:chords
+      songChords:chords,
+      secuence: [url]
     }
-    
+
     let promise = songId ? updateSong(body) : createSong(body);
 
     return Promise.all([promise])
@@ -94,22 +96,15 @@ const CreateSong = () => {
 
   };
   
-  const readFileAsync = async (file) => {
+  /* const readFileAsync = async (file) => {
     const buffer = await readBuffer(file);
     const uint8View = new Uint8Array(buffer);
     return Buffer.from(uint8View);
-  };
+  };*/ 
 
   const loadMultitrack = async (e) => {
     const { files = [] } = e.target;
-    const promises = [];
-
-    for (let i = 0; i < files.length; i += 1) {
-      promises.push(readFileAsync(files[i]));
-    }
-
-    const bufferArray = await Promise.all(promises);
-    setMultitrack(bufferArray);
+    setMultitrack(files[0]);
   }
 
   const formatLyrics = (textOriginal) => {

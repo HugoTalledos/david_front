@@ -1,3 +1,5 @@
+import firebase from "../utils/firebase";
+import { list, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { mdToHTML } from "./snarkdown";
 
 export const markToHTML = (data) => mdToHTML(data);
@@ -21,4 +23,17 @@ export const sessionConfig = () => {
     ...user,
     token,
   };
+};
+
+
+export const loadSound = (file) => {
+  let url = '';
+  try {
+    const imageRef = ref(firebase.storage(), `songs/${file.name}`);
+    uploadBytes(imageRef, file)
+      .then((snapshot) => getDownloadURL(snapshot.ref));
+  } catch (e) {
+    console.log('Error subiendo canción');
+  }
+  return url;
 };
