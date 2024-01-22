@@ -5,7 +5,7 @@ import TextView from "../components/TextView";
 import './ViewSetDesk.css';
 import MusicPlayer from "../components/MusicPlayer/MusicPlayer";
 
-const ViewSetDesk = ({ songList }) => {
+const ViewSetDesk = ({ songList, groupInfo }) => {
   const [selectedSong, setSelectedSong] = useState({});
   const [showLyrics, setShowLyrics] = useState(false);
 
@@ -19,7 +19,11 @@ const ViewSetDesk = ({ songList }) => {
       }
       <div className="desktop__layout-tools">
         <SongList list={songList} onClickRow={(e) => setSelectedSong(e)}/>
-        <SetTools {...selectedSong} showLyrics={(e) => setShowLyrics(e)} />
+        <SetTools {...selectedSong } 
+          details={groupInfo.setDescription}
+          title={groupInfo.setName}
+          showLyrics={(e) => setShowLyrics(e)}
+        />
       </div>
     </div>
   </div>);
