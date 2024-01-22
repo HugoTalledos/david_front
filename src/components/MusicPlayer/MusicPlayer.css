@@ -1,9 +1,78 @@
 .musicplayer-container {
+  gap: 10px;
   display: flex;
-  justify-content: space-between;
   padding: 1em;
   align-items: center;
-  height: 5em;
+  height: 6em;
   background-color: white;
   border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mediaplayer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+#waveform {
+  width: 100%;
+}
+
+.loaded-song {
+  width: 90%;
+  background-color: var(--shadow);
+  height: 5px;
+  border-radius: 5px;
+}
+
+
+
+
+.lateral_container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--light);
+  height: 100vh;
+  width: 35%;
+  top: 0;
+  position: fixed;
+  right: 0;
+  box-shadow: 0px 7px 14px 13px var(--shadow);
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 10000000;
+  transition: all .5s;
+}
+
+.lateral_container--content {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5em;
+  height: 100%;
+}
+
+.lateral_container--content button.close {
+  border: 0;
+  background-color: transparent;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.hidden-lateral {
+  right: -100%;
+  transition: right .5s ease-in-out;
+}
+
+
+@media (max-width: 600px) {
+  .lateral_container {
+    width: 100%;
+  }
+  .hidden-lateral {
+    right: -120%;
+  }
 }
