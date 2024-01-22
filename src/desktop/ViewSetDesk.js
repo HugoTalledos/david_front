@@ -9,7 +9,7 @@ const ViewSetDesk = ({ songList, groupInfo }) => {
   const [selectedSong, setSelectedSong] = useState({});
   const [showLyrics, setShowLyrics] = useState(false);
 
-  return(<div className="desktop__layout">
+  return(<div id="desktop" className="desktop__layout">
     <MusicPlayer {...selectedSong} />
     <div className="desktop__layout-list">
       {
@@ -17,7 +17,7 @@ const ViewSetDesk = ({ songList, groupInfo }) => {
         ? <TextView {...selectedSong} onlyLyrics={showLyrics}/>
         : <p>No hay nada</p>
       }
-      <div className="desktop__layout-tools">
+      <div className="desktop__layout-tools mb-5">
         <SongList list={songList} onClickRow={(e) => setSelectedSong(e)}/>
         <SetTools {...selectedSong } 
           details={groupInfo.setDescription}

@@ -18,13 +18,13 @@
     display: none;
   }
   #mobile {
-    display: flex;
+    display: block;
   }
 }
 
-@media only screen and (min-width: 992px){
+@media only screen and (min-width: 768px){
   #desktop {
-    display: flex;
+    display: block;
   }
   
   #mobile {

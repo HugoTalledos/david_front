@@ -69,7 +69,7 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
   }
 
 
-  return (<div className='musicplayer-container border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700'>
+  return (<div className='musicplayer-container mb-5 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700'>
     <div className='mediaplayer'>
       <div id='waveform' style={{ display: `${waveFormLoaded ? 'block' : 'none'}`}}></div>
       { !waveFormLoaded && <div className='loaded-song'/> }
