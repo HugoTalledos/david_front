@@ -11,41 +11,30 @@ import Load from "../components/Load";
 const ViewSet = () => {
   const { dispatchData } = useContext(NotificationContext);
   const [setId] = useState(useParams().setId);
-  const [group, setGroup] = useState({});
-  const [config, setConfig] = useState(null);
-  const [songConfig, setSongConfig] = useState(null);
-  const [selectedSong, setSelectedSong] = useState('');
+  const [groupInfo, setGroupInfo] = useState({});
   const [songsConfig, setSongsConfig] = useState([]);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     Promise.all([getSetById(setId)])
-    .then(([{ songsConfig, ...all }]) =>{
-      setGroup({ songsConfig, ...all });
-      setSongsConfig(songsConfig);
-      setSongConfig(songsConfig[0]);
+    .then(([{ songConfig: songs, ...all }]) =>{
+      setSongsConfig(songs);
+      setGroupInfo(all);
       setLoading(false);
     })
-    .catch((e) =>{console.log(e); dispatchData({ type: 'danger', text: 'Ocurrio un error, por favor intenta más tarde.' })});
+    .catch((e) => dispatchData({ type: 'danger', text: 'Ocurrio un error, por favor intenta más tarde.' }));
   }, [setId, dispatchData]);
 
-  const selectSong = (configId) => {
-    const config = (songsConfig.find((song) => song.configId === configId) || {});
-    setConfig(config);
-    setSongConfig(config);
-    setSelectedSong(configId);
-  }
-
-  return (<div className='switch_view'>
+  return (<>
     {
       (loading)
       ? <Load fullScreen={true}/>
       : <>
-        <ViewSetDesk group={group} onClick={(e) => selectSong(e)} config={config} selectedSong={selectedSong}/>
-        <ViewSetMobile group={group} onClick={(e) => selectSong(e)} config={songConfig} />
+        <ViewSetDesk songList={songsConfig} groupInfo={groupInfo}/>
+        <ViewSetMobile groupInfo={groupInfo}  songList={songsConfig} />
       </>
     }
-  </div>);
+  </>);
 };
 
 export default ViewSet;
