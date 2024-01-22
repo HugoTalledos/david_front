@@ -4,10 +4,19 @@ import useMetronome from "../../hooks/useMetronome";
 import tickOgg from '../../assets/tick.ogg';
 import tickMp3 from '../../assets/tick.mp3';
 import './SetTools.css'
+import Modal from "../Modal";
 
-const SetTools = ({ songTempo, songResource, showLyrics }) =>{
+const SetTools = ({
+  songTempo,
+  songResources = [],
+  showLyrics,
+  details,
+  title
+}) => {
   const [onlyLyrics, setOnlyLyrics] = useState(false);
   const [active, setActive] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
   const audioRef = useRef();
 
   const { startOrStop } = useMetronome({ tempo: songTempo, audioRef });
@@ -22,9 +31,30 @@ const SetTools = ({ songTempo, songResource, showLyrics }) =>{
       type="dark-outline"
       onClick={() => setActive(!active)}
     />
-    <Button type="dark-outline" disabled={!songResource}>
-      <a href={songResource} rel='noreferrer' target='_blank'>Referencia</a>
-    </Button>
+    <>
+      <Button
+        label="Referencias"
+        onClick={() => setOpen(!open)}
+        type="dark-outline"
+        disabled={songResources.length <= 0}
+      />
+      <div id="dropdownTop" className={`fixed z-10 ${open ? 'block': 'hidden'} bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}>
+        <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownTopButton">
+          {
+            songResources.map((resource, idx) => (
+              <li>
+                <a target="_blank"
+                  rel="noreferrer"
+                  href={resource}
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                  Referencia { idx + 1 }
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </>
     <Button
       disabled={!songTempo}
       type="dark-outline"
@@ -33,6 +63,21 @@ const SetTools = ({ songTempo, songResource, showLyrics }) =>{
         showLyrics(!onlyLyrics);
       }}
       label={`Ver ${ onlyLyrics ? 'acordes' : 'letra'}`} />
+    
+    <Button
+      type="dark-outline"
+      disabled={!details}
+      onClick={() => setShow(true)}
+      label='Detalles' />
+
+    <Modal
+      isOpen={show}
+      onClose={() => setShow(false)}
+      title={`Notas del Set: ${title}`}
+      children={<p class="mb-3 text-gray-500 dark:text-gray-400">
+        {details || 'No hay notas por mostrar'}
+        </p>}
+    />
 
     <audio id='audio-metronomo' ref={audioRef}>
       <source src={tickOgg} type='audio/ogg' />
