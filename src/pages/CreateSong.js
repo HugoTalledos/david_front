@@ -1,10 +1,9 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
-import { Buffer } from 'buffer';
 import NotificationContext from '../context/notification-context';
 import SingerApi from "../services/Singer";
 import { createSong, updateSong, getSongById } from "../services/Song";
-import { loadSound, markToHTML, readBuffer } from '../utils/Utils';
+import { loadSound, markToHTML } from '../utils/Utils';
 import { tonalities, tonalityTypes } from "../utils/constants";
 
 import ReactQuill from 'react-quill';
