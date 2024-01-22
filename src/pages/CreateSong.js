@@ -186,8 +186,7 @@ const CreateSong = () => {
                   setResource('');
                   setResources((prev) => [...prev, resource])
                 }}
-                icon='check'
-                label='Agregar'
+                icon='plus'
                 type="dark-outline"
               />
             </div>
@@ -226,12 +225,12 @@ const CreateSong = () => {
         <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
           <div className="grid gap-6 mb-6 md:grid-cols-2">
             <div>
-              <label for="chords" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Letra con acordes</label>
+              <label htmlFor="chords" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Letra con acordes</label>
               <ReactQuill theme="snow" value={chords} onChange={(e) => formatLyrics(e)} />
             </div>
             <div>
               <label for="chords" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Letra</label>
-              <p className="mb-3 text-gray-500 dark:text-gray-400"
+              <pre className="mb-3 text-gray-500 dark:text-gray-400"
                  dangerouslySetInnerHTML={{ __html: markToHTML(lyrics) }}/>
             </div>
           </div>

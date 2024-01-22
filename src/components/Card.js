@@ -1,17 +1,11 @@
 import { useState } from 'react';
-import {ReactComponent as MenuSVG} from '../assets/icons/More.svg';
+import { Button } from 'leita-components-ui';
 const Card = ({ setId, setName, songsConfig, setDescription, onDelete }) => {
   const [open, setOpen] = useState(false);
   return (
     <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <div className="flex justify-end px-4 pt-4" style={{ position: 'relative' }}>
-        <button id="dropdownButton"
-                onClick={() => setOpen(!open)}
-                data-dropdown-toggle="dropdown"
-                className="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
-          <span className="sr-only">Open dropdown</span>
-          <MenuSVG />
-        </button>
+        <Button type='link' onClick={() => setOpen(!open)} icon='dots-vertical'/>
         <div id="dropdown" style={{ position: 'absolute', inset: '0px auto auto 0px', margin: '0px', transform: 'translate(200px, 50px)' }}
              className={`z-10 ${ open ? '' : 'hidden' } text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}>
           <ul className="py-2" aria-labelledby="dropdownButton">

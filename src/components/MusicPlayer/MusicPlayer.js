@@ -75,13 +75,13 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
       { !waveFormLoaded && <div className='loaded-song'/> }
     </div>
     <div className='flex gap-2'>
-      <Button label='Ante' disabled={secuence.length <= 0} onClick={backAudio} />
-      <Button label={`${isPlayed ? 'Pause' : 'Play'}`} onClick={playAudio} disabled={secuence.length <= 0}/>
-      <Button label='Desp' disabled={secuence.length <= 0} onClick={passAudio}/>
-      <Button label='Stop' disabled={secuence.length <= 0} onClick={stopAudio}/>
+      <Button icon='arrow-u-left-top' type='link' disabled={secuence.length <= 0} onClick={backAudio} />
+      <Button icon={`${isPlayed ? 'pause' : 'play'}`} type='link' onClick={playAudio} disabled={secuence.length <= 0}/>
+      <Button icon='arrow-u-right-top' type='link' disabled={secuence.length <= 0} onClick={passAudio}/>
+      <Button icon='stop' type='link' disabled={secuence.length <= 0} onClick={stopAudio}/>
       <Button
-        icon='music-note-eighth'
-        label='Confi'
+        type='link'
+        icon='tune'
         onClick={() => setOpen(true)}
         disabled={secuence.length <= 0}
       />
@@ -91,7 +91,6 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
     <div className={`lateral_container ${!open ? 'hidden-lateral' : ''}`}>
       <div className="lateral_container--content">
         <button type="button" onClick={() => setOpen(!open)} className="close">
-          Close
           <span id="left" className="mdi mdi-24px mdi-arrow-right-drop-circle" />
         </button>
         <h2 className="mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">Configuración</h2>

@@ -15,7 +15,7 @@ const SongList = ({ list, onClickRow = undefined }) => (
             list.map(({ songId, songName, songTonality, songTempo, ...all }) => (
               <tr
                 key={songId}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                className="bg-white cursor-pointer border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 onClick={() => onClickRow({ songId, songName, songTonality, songTempo, ...all })}>
                 <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-normal dark:text-white">
                   { songName }
