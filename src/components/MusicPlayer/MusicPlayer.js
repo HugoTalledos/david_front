@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button, TabItem, Tabs } from 'leita-components-ui';
 import WaveSurfer from 'wavesurfer.js';
-import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm';
 import './MusicPlayer.css';
 
 const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
@@ -15,25 +14,21 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
   useEffect(() => {
     if (secuence.length <= 0) return;
 
+    if (wavesurfer.current) {
+      wavesurfer.current.destroy();
+      setIsPlayed(false);
+    }
+
     setWaveFormLoaded(true);
     wavesurfer.current = WaveSurfer.create({
       container: '#waveform',
       waveColor: '#9b9b9b96',
       progressColor: '#2274A5',
+      barGap: 3,
+      barRadius: 3,
+      barWidth: 3,
       cursorWidth: 2,
       height: 60,
-      plugins: [TimelinePlugin.create({
-        timeInterval: ((60 * 4) / bpm),
-//        secondaryLabelInterval: ((60 * 4) / bpm),
-        secondaryLabelOpacity: 1,
-        height: 900,
-        style: {
-          fontSize: '1px',
-          position: 'absolute',
-          width: '100%',
-          top: '0',
-        }
-      })],
     });
 
     wavesurfer.current.load(secuence[0]);
@@ -43,9 +38,30 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
   const playAudio = () => {
     if (wavesurfer.current.isPlaying()) wavesurfer.current.pause();
     else wavesurfer.current.play();
-    console.log(wavesurfer.current.getCurrentTime())
     setIsPlayed(!isPlayed);
   };
+
+  const backAudio = () => {
+    const time = ((60 * 4) / bpm);
+    const currentTime = wavesurfer.current.getCurrentTime()
+    if(currentTime > 0 && currentTime < time) wavesurfer.current.setTime(0);
+    if(currentTime > 0) wavesurfer.current.setTime(currentTime - time);
+  }
+
+  const passAudio = () => {
+    const time = ((60 * 4) / bpm);
+    const totalTime = wavesurfer.current.getDuration();
+    const currentTime = wavesurfer.current.getCurrentTime()
+    if(currentTime > (totalTime - time) && currentTime < totalTime) {
+      wavesurfer.current.setTime(totalTime);
+      setIsPlayed(false);
+    }
+    if(currentTime < totalTime) wavesurfer.current.setTime(currentTime + time);
+  }
+  const stopAudio = () => {
+    wavesurfer.current.stop();
+    setIsPlayed(false);
+  }
 
   const changeSpeedTrack = (speed) => {
     setSpeedSelected((speed * 100).toString())
@@ -55,16 +71,21 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
 
   return (<div className='musicplayer-container border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700'>
     <div className='mediaplayer'>
-      <Button label={`${isPlayed ? 'Pause' : 'Play'}`} onClick={playAudio} disabled={secuence.length <= 0}/>
       <div id='waveform' style={{ display: `${waveFormLoaded ? 'block' : 'none'}`}}></div>
       { !waveFormLoaded && <div className='loaded-song'/> }
     </div>
-    <Button
-      icon='music-note-eighth'
-      label='Config'
-      onClick={() => setOpen(true)}
-      disabled={secuence.length <= 0}
-    />
+    <div className='flex gap-2'>
+      <Button label='Ante' disabled={secuence.length <= 0} onClick={backAudio} />
+      <Button label={`${isPlayed ? 'Pause' : 'Play'}`} onClick={playAudio} disabled={secuence.length <= 0}/>
+      <Button label='Desp' disabled={secuence.length <= 0} onClick={passAudio}/>
+      <Button label='Stop' disabled={secuence.length <= 0} onClick={stopAudio}/>
+      <Button
+        icon='music-note-eighth'
+        label='Confi'
+        onClick={() => setOpen(true)}
+        disabled={secuence.length <= 0}
+      />
+    </div>
 
       
     <div className={`lateral_container ${!open ? 'hidden-lateral' : ''}`}>
