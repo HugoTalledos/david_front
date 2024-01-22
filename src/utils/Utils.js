@@ -1,5 +1,5 @@
 import firebase from "../utils/firebase";
-import { list, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { mdToHTML } from "./snarkdown";
 
 export const markToHTML = (data) => mdToHTML(data);
