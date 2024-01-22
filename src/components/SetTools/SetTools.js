@@ -83,7 +83,7 @@ const SetTools = ({
       isOpen={show}
       onClose={() => setShow(false)}
       title={`Notas del Set: ${title}`}
-      children={<pre className="mb-3 text-gray-500 dark:text-gray-400">
+      children={<pre className="mb-3 text-gray-500 dark:text-gray-400 whitespace-break-spaces">
         {details || 'No hay notas por mostrar'}
         </pre>}
     />

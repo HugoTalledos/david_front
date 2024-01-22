@@ -11,3 +11,9 @@
   margin-top: auto;
   box-sizing: border-box;
 }
+
+@media (max-width: 767px) {
+  .btn__group {
+    height: 100%;
+  }
+}

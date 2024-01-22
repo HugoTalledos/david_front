@@ -18,7 +18,7 @@
   width: 100%;
 }
 
-#waveform {
+#waveform, #waveMobile {
   width: 100%;
 }
 
@@ -68,11 +68,23 @@
 }
 
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .lateral_container {
     width: 100%;
   }
   .hidden-lateral {
     right: -120%;
   }
+
+  .musicplayer-container {
+    flex-direction: column;
+    height: auto;
+    gap: 0px;
+    padding: 0.7rem 0.5rem 0;
+  }
+
+  .loaded-song {
+    width: 100%;
+  }
+  
 }

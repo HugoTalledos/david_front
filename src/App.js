@@ -30,8 +30,8 @@ function App() {
     danger="#BB0A21"
     fontFamily={['Raleway', 'BlinkMacSystemFont', 'Segoe UI']}
   >
-    <div className='main-container'>
-      <main className="flex h-[90vh] flex-col w-full p-10">
+    <div className='w-full box-border h-[100vh] p-5'>
+      <main className="flex flex-col box-border h-full  w-full">
         <Router history={history}>
           <NotificationContext>
             { user && <Header /> }

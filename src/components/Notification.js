@@ -36,7 +36,7 @@ const Notification = () => {
   }
 
   return (
-  <div id="toast-success" className={`${!data.show ? 'hidden' : ''} flex items-center fixed top-5 right-5 w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800`} role="alert">
+  <div id="toast-success" className={`${!data.show ? 'hidden' : ''} flex items-center fixed top-5 max-[767px]:top-20 right-5 w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800`} role="alert">
     <div className={color[data.type]}>
         { renderIcon[data.type] }
         <span className="sr-only">Check icon</span>

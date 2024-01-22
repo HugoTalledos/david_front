@@ -3,7 +3,7 @@ import { Button, TabItem, Tabs } from 'leita-components-ui';
 import WaveSurfer from 'wavesurfer.js';
 import './MusicPlayer.css';
 
-const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
+const MusicPlayer = ({ secuence = [], songTempo: bpm, mobileView }) => {
   const wavesurfer = useRef(null);
   const [waveFormLoaded, setWaveFormLoaded] = useState(false);
   const [isPlayed, setIsPlayed] = useState(false);
@@ -21,14 +21,15 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
 
     setWaveFormLoaded(true);
     wavesurfer.current = WaveSurfer.create({
-      container: '#waveform',
+      container: mobileView ? '#waveMobile' : '#waveform',
       waveColor: '#9b9b9b96',
       progressColor: '#2274A5',
-      barGap: 3,
-      barRadius: 3,
-      barWidth: 3,
-      cursorWidth: 2,
-      height: 60,
+      barGap: mobileView ? null: 3,
+      barRadius: mobileView ? null: 3,
+      barWidth: mobileView ? null: 3,
+      cursorWidth: mobileView ? 5: 2,
+      dragToSeek: true,
+      height: mobileView ? 11 : 60,
     });
 
     wavesurfer.current.load(secuence[0]);
@@ -42,14 +43,16 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
   };
 
   const backAudio = () => {
-    const time = ((60 * 4) / bpm);
+    const isUsableBpm = bpm < 300;
+    const time = ((60 * 4) / (isUsableBpm ? bpm : 60));
     const currentTime = wavesurfer.current.getCurrentTime()
     if(currentTime > 0 && currentTime < time) wavesurfer.current.setTime(0);
     if(currentTime > 0) wavesurfer.current.setTime(currentTime - time);
   }
 
   const passAudio = () => {
-    const time = ((60 * 4) / bpm);
+    const isUsableBpm = bpm < 300;
+    const time = ((60 * 4) / (isUsableBpm ? bpm : 60));
     const totalTime = wavesurfer.current.getDuration();
     const currentTime = wavesurfer.current.getCurrentTime()
     if(currentTime > (totalTime - time) && currentTime < totalTime) {
@@ -69,12 +72,12 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm }) => {
   }
 
 
-  return (<div className='musicplayer-container mb-5 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700'>
+  return (<div className='musicplayer-container mb-5 max-[767px]:mb-1 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700'>
     <div className='mediaplayer'>
-      <div id='waveform' style={{ display: `${waveFormLoaded ? 'block' : 'none'}`}}></div>
+      <div id={mobileView ? 'waveMobile' : 'waveform'} style={{ display: `${waveFormLoaded ? 'block' : 'none'}`}}></div>
       { !waveFormLoaded && <div className='loaded-song'/> }
     </div>
-    <div className='flex gap-2'>
+    <div className='flex gap-2 max-[767px]:gap-0'>
       <Button icon='arrow-u-left-top' type='link' disabled={secuence.length <= 0} onClick={backAudio} />
       <Button icon={`${isPlayed ? 'pause' : 'play'}`} type='link' onClick={playAudio} disabled={secuence.length <= 0}/>
       <Button icon='arrow-u-right-top' type='link' disabled={secuence.length <= 0} onClick={passAudio}/>
