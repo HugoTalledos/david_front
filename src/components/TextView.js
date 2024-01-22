@@ -5,7 +5,7 @@ const TextView = ({
   singerName = '',
   songTonality = '',
   songTempo = '',
-  songLyric = '',
+  songLyrics = '',
   songChords = '',
   onlyLyrics = false
 }) => (
@@ -20,8 +20,8 @@ const TextView = ({
       </div>
     </div>
     <div className="overflow-auto p-6 bg-white border border-gray-200 rounded-lg shadow h-[51vh]">
-      <p className="mb-3 text-gray-500 dark:text-gray-400"
-        dangerouslySetInnerHTML={{ __html: markToHTML(onlyLyrics ? songLyric : songChords) }}/>
+      <pre className="mb-3 text-gray-500 dark:text-gray-400"
+        dangerouslySetInnerHTML={{ __html: markToHTML(onlyLyrics ? songLyrics : songChords) }}/>
     </div>
   </div>
 </div>);
