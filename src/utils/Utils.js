@@ -26,11 +26,11 @@ export const sessionConfig = () => {
 };
 
 
-export const loadSound = (file) => {
+export const loadSound = (file, id) => {
   let url = '';
   try {
-    const imageRef = ref(firebase.storage(), `songs/${file.name}`);
-    uploadBytes(imageRef, file)
+    const imageRef = ref(firebase.storage(), `songs/${id}/${file.name}`);
+    return uploadBytes(imageRef, file)
       .then((snapshot) => getDownloadURL(snapshot.ref));
   } catch (e) {
     console.log('Error subiendo canción');
