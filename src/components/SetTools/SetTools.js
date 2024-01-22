@@ -34,7 +34,7 @@ const SetTools = ({
 
   return (<div className="btn__group border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
     <Button
-      disabled={!songTempo}
+      disabled={!songTempo || songTempo > 300}
       label="Metronómo"
       type="dark-outline"
       onClick={() => setActive(!active)}
