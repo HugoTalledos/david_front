@@ -13,6 +13,7 @@ import NotificationContext from './data/notification-data';
 import ViewSingers from './pages/ViewSingers';
 import ViewSongs from './pages/ViewSongs';
 import { Theme } from 'leita-components-ui';
+import '@mdi/font/css/materialdesignicons.min.css';
 
 function App() {
   const user = localStorage.getItem('us'); 
