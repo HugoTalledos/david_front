@@ -1,4 +1,4 @@
-const Modal = ({ isOpen, onClose, onAdd, title, children }) => (<>
+const Modal = ({ isOpen, onClose, title, children }) => (<>
   <div id="authentication-modal" tabindex="-1" aria-hidden="true" className={`fixed z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full ${!isOpen ? 'hidden' : ''}`}>
     <div className="relative w-full max-w-md max-h-full m-auto">
       <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -15,7 +15,7 @@ const Modal = ({ isOpen, onClose, onAdd, title, children }) => (<>
       </div>
     </div>
   </div> 
-  {isOpen && (<div modal-backdrop="" class="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40"></div>)}
+  {isOpen && (<div modal-backdrop="" className="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40"></div>)}
 </>);
 
 export default Modal;
