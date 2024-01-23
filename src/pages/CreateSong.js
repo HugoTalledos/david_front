@@ -10,6 +10,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Button, Select, TextField } from "leita-components-ui";
 import { v4 } from "uuid";
+import PreviewTrack from "../components/PreviewTrack/PreviewTrack";
 
 const CreateSong = () => {
   const [songId] = useState(useParams().songId);
@@ -122,9 +123,10 @@ const CreateSong = () => {
             type="dark-outline"
           />
         </div>
+        <PreviewTrack visible={multitrack} track={multitrack} time={(60 * 4) / tempo} />
         <section className="flex flex-row gap-4 w-full pb-5">
           <div className="flex flex-col w-full gap-3 p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Secuencia</label>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Secuencia</label>
             <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
               id="file_input"
               type="file"
@@ -229,7 +231,7 @@ const CreateSong = () => {
               <ReactQuill theme="snow" value={chords} onChange={(e) => formatLyrics(e)} />
             </div>
             <div>
-              <label for="chords" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Letra</label>
+              <label htmlFor="chords" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Letra</label>
               <pre className="mb-3 text-gray-500 dark:text-gray-400"
                  dangerouslySetInnerHTML={{ __html: markToHTML(lyrics) }}/>
             </div>

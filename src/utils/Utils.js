@@ -37,3 +37,12 @@ export const loadSound = (file, id) => {
   }
   return url;
 };
+
+export const roundTimeMarker = (time, multiplo) => {
+    const multiploInferior = Math.floor(time / multiplo) * multiplo;
+    const multiploSuperior = multiploInferior + multiplo;
+    if (Math.abs(time - multiploInferior) < Math.abs(time - multiploSuperior)) {
+      return multiploInferior;
+    }
+    return multiploSuperior;
+}
