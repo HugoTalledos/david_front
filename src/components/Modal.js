@@ -8,7 +8,7 @@ const Modal = ({ isOpen, onClose, title, children }) => (<>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
             {title}
           </h3>
-          <Button type="link" onClick={onClose} icon="close" />
+          { onClose && <Button type="link" onClick={onClose} icon="close" /> }
         </div>
         <div className="p-4 md:p-5 space-y-4">{children} </div>
       </div>
