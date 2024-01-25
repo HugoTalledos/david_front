@@ -1,125 +1,152 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useWavesurfer } from '@wavesurfer/react'
 import { Button, Select } from "leita-components-ui";
-import WaveSurfer from 'wavesurfer.js';
+import Timeline from 'wavesurfer.js/dist/plugins/timeline.esm'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm';
-import TimelinePlugin from 'wavesurfer.js/dist/plugins/timeline.esm';
 import Modal from '../Modal';
 import { markerTypes } from "../../utils/constants";
-import { roundTimeMarker } from "../../utils/Utils";
+import ButtonsRegion from "./ButtonsRegion";
+import { loadTrackFromBlob, loadTrackFromString } from '../../utils/RegiosUtils';
+import { useState } from 'react';
+import { roundTimeMarker } from '../../utils/Utils';
 
-const PreviewTrack = ({ visible, track, time }) => {
-  const wavesurfer = useRef(null);
-  const wsRegions = useRef(null);
-  const [isPlayed, setIsPlayed] = useState(false);
-  const [selectedRegion, setSelectedRegion] = useState(null);
+const PreviewTrack = ({ track, time, regions = [], getRegions }) => {
+  const containerRef = useRef(null);
+  const wsRegion = useRef(null);
+  const [selectedRegion, setSelectedRegion] = useState({});
   const [isOpen, setIsOpen] = useState(false);
-  const [start, setStart] = useState(0);
-  const [end, setEnd] = useState(0);
+  const [visible, setVisible] = useState(false);
+
+  const { wavesurfer, isPlaying } = useWavesurfer({
+    container: containerRef,
+    waveColor: '#9b9b9b96',
+    progressColor: '#2274A5',
+    barGap: 3,
+    barRadius: 3,
+    barWidth: 3,
+    cursorWidth: 2,
+    dragToSeek: true,
+    width: '100%',
+    height: 60,
+    plugins: useMemo(() => [Timeline.create({
+      timeInterval: time,
+      secondaryLabelOpacity: 1,
+      style: { fontSize: '0px' }
+    })], [time]),
+  });
 
   useEffect(() => {
     if (!track) return;
-    if (wavesurfer.current) wavesurfer.current.destroy();
-    wavesurfer.current = WaveSurfer.create({
-      container: '#waveform',
-      waveColor: '#9b9b9b96',
-      progressColor: '#2274A5',
-      barGap: 3,
-      barRadius: 3,
-      barWidth: 3,
-      cursorWidth: 2,
-      dragToSeek: true,
-      height: 60,
-      minPxPerSec: 0,
-      plugins: [TimelinePlugin.create({
-        timeInterval: time,
-        secondaryLabelOpacity: 1,
-        style: { fontSize: '0px' }
-      })],
-    });
+    
+    if (typeof track === 'object') loadTrackFromBlob(wavesurfer, track);
+    else loadTrackFromString(wavesurfer, track);
 
-    const reader = new FileReader();
+    
+    if (!regions) return;
 
-    reader.onload = async (event) => {
-      let blob = new window.Blob([new Uint8Array(event.target.result)], { type: "audio/mpeg"});
-      wavesurfer.current.loadBlob(blob);
-    };
-    reader.readAsArrayBuffer(track);
+    wsRegion.current = wavesurfer.registerPlugin(RegionsPlugin.create());
+    wavesurfer.on('redrawcomplete', () => {
+      regions.forEach(({ color, label, regionId, end, start}) => {
+        wsRegion.current.addRegion({
+          id: regionId,
+          start,
+          end,
+          color,
+          content: label,
+          resize: false,
+          drag: false
+        });
+      })
+      setSelectedRegion(null);
+      setVisible(true);
+    }, { once: true });
+    wsRegion.current.enableDragSelection({ color: 'rgba(255, 0, 0, 0.1)' });
+  }, [track, wavesurfer]);
 
-    wsRegions.current = wavesurfer.current.registerPlugin(RegionsPlugin.create());
-    wsRegions.current.enableDragSelection({ color: 'rgba(255, 0, 0, 0.1)' });
 
-    wsRegions.current.on('region-clicked', (region, e) => {
+  const stopAudio = () => wavesurfer.stop();
+
+  const playOrPause = useCallback(() => {
+    wavesurfer && wavesurfer.playPause()
+  }, [wavesurfer])
+
+  const activeEditMode = () => {
+    wsRegion.current.on('region-clicked', (region, e) => {
       e.stopPropagation();
       region.play();
-      setIsPlayed(true);
       setSelectedRegion(region);
     });
 
-    wsRegions.current.on('region-created', (region) => {
+    wsRegion.current.on('region-created', (region) => {
       setSelectedRegion(region);
       if (region.start === 0) {
-        setStart(0);
+        region.setOptions({ start: 0 });
       } else {
-        setStart(roundTimeMarker(region.start, time));
-        setEnd(roundTimeMarker(region.end, time));
+        region.setOptions({
+          start: roundTimeMarker(region.start, time),
+          end: roundTimeMarker(region.end, time)
+        })
       }     
       setIsOpen(true);
     });
 
-    wsRegions.current.on('region-updated', (region) => {
+    wsRegion.current.on('region-updated', (region) => {
       const starTime = roundTimeMarker(region.start, time);
       const endTime = roundTimeMarker(region.end, time);
-
       region.setOptions({ start: starTime, end: endTime });
     });
 
-    wsRegions.current.on('region-double-clicked', (region) => {
+    wsRegion.current.on('region-double-clicked', (region) => {
       setIsOpen(true);
       setSelectedRegion(region);
       stopAudio();
     });
-  }, [track, time]);
 
-  const playAudio = () => {
-    if (wavesurfer.current.isPlaying()) wavesurfer.current.pause();
-    else wavesurfer.current.play();
-    setIsPlayed(!isPlayed);
-  };
-
-  const stopAudio = () => {
-    wavesurfer.current.stop();
-    setIsPlayed(false);
-  }
-
-  const removeRegion = () => {
-    selectedRegion.remove();
-    wavesurfer.current.pause();
-    setSelectedRegion(null);
-    setIsPlayed(false);
+    if (wsRegion.current.getRegions().length > 0) {
+      wsRegion.current.getRegions().forEach((r) => r.setOptions({ resize: true, drag: true }))
+    }
   }
 
   const createRegion = (regionConfig) => {
     const { label, color, value } = markerTypes.find(({ value }) => value === regionConfig);
-    selectedRegion.setOptions({
-      color,
-      start,
-      end,
-      content: label || 'Tag',
-      id: value || 'tag',
-    });
-
+    selectedRegion.setOptions({ color, content: label || 'Tag', id: value || 'tag' });
     setIsOpen(false);
   };
+
+  const removeRegion = () => {
+    selectedRegion.remove();
+    wavesurfer.pause();
+    setSelectedRegion(null);
+  }
+
+  const saveRegions = () => {
+    const allRegions = wsRegion.current.getRegions();
+    allRegions.forEach((r) => {
+      if (!r.content) return r.remove();
+      r.setOptions({ resize: false, drag: false })
+    });
+    const clearRegions = wsRegion.current.getRegions();
+    getRegions(clearRegions);
+    wsRegion.current.unAll();
+  }
 
   return (<div className='flex flex-row w-full py-5 align-center'>
     {
       visible && (<>
-        <Button  icon={`${isPlayed ? 'pause' : 'play'}`} type='link' onClick={playAudio} />
+        <Button  icon={`${isPlaying ? 'pause' : 'play'}`} type='link' onClick={playOrPause} />
         <Button icon='stop' type='link' onClick={stopAudio} />
       </>)
     }
-    <div id='waveform' className={`${!visible ? 'hidden' : 'block'}`}></div>
-    { visible && (<Button icon="delete" type='link' disabled={!selectedRegion} onClick={removeRegion} />) }
+    <div className={`${!visible ? 'hidden' : 'block'} w-full`} ref={containerRef}/>
+    <ButtonsRegion
+      show={visible}
+      isRegionSelected={selectedRegion}
+      wavesurferInstance={wavesurfer}
+      onActive={activeEditMode}
+      onRemove={removeRegion}
+      onSave={saveRegions}
+    />
+
     <Modal
       title={'Agrega una nueva sección'}
       isOpen={isOpen}
