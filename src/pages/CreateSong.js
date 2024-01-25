@@ -25,7 +25,8 @@ const CreateSong = () => {
   const [lyrics, setLyrics] = useState('');
   const [chords, setChords] = useState('');
   const [multitrack, setMultitrack] = useState('');
-  const [loading, setLoading]  =useState(false);
+  const [loading, setLoading] = useState(false);
+  const [regions, setRegions] = useState([]);
 
   const { dispatchData } = useContext(NotificationContext);
 
@@ -41,30 +42,31 @@ const CreateSong = () => {
   useEffect(() => {
     if (songId) {
       Promise.all([getSongById(songId)])
-      .then(([{
-        songName, songTempo, songTonality,
-        singerId, songResource, songChords }]) => {
+      .then(([song]) => {
         const regexTon = new RegExp(`[${tonalities.toString()}]`);
         const regexComp = new RegExp(`[${tonalityTypes.toString()}]`);
-        const [, comple] = songTonality.split(regexTon);
-        const [ton] = songTonality.split(regexComp);
-        setTitle(songName);
-        setTempo(songTempo);
-        setResources(songResource);
-        setChords(songChords);
-        setSinger(singerId);
+        const [, comple] = song.songTonality.split(regexTon);
+        const [ton] = song.songTonality.split(regexComp);
+        setTitle(song.songName);
+        setTempo(song.songTempo);
+        setResources(song.songResources);
+        setChords(song.songChords);
+        setSinger(song.singerId);
         setTonality(ton);
         setComplement(comple);
+        setRegions(song.regions);
+        setMultitrack(song.secuence[0])
       })
       .catch(() => dispatchData({ type: 'danger', text: 'Error consultando el set. intente mas tarde' }))
     }
   }, [songId, dispatchData]);
 
-  const saveSong = async (songId) => {
+  const saveSong = async () => {
     setLoading(true);
     const [{singerId, singerName}] = singerList.filter((current) => current.singerId === singer);
     const newSongId = songId || v4();
-    const url = await loadSound(multitrack, newSongId);
+    let url = multitrack;
+    if (!songId) url = await loadSound(multitrack, newSongId);
 
     const body =  {
       songId: newSongId,
@@ -76,7 +78,8 @@ const CreateSong = () => {
       songResources: resources,
       songLyrics: lyrics,
       songChords:chords,
-      secuence: [url]
+      secuence: [url],
+      regions,
     }
 
     let promise = songId ? updateSong(body) : createSong(body);
@@ -111,6 +114,10 @@ const CreateSong = () => {
     setLyrics(textoLimpio);
   };
 
+  const formatRegion = (listRegion) => {
+    setRegions(listRegion.map(({ id, color, start, end, content }) => ({ regionId: id, color, start, end, label: content.outerText })))
+  }
+
   return(<>
       <div className="p-4 h-full overflow-auto">
         <div className="flex items-center mt-4 md:mt-6 pb-5">
@@ -123,14 +130,19 @@ const CreateSong = () => {
             type="dark-outline"
           />
         </div>
-        <PreviewTrack visible={multitrack} track={multitrack} time={(60 * 4) / tempo} />
+        <PreviewTrack
+          track={multitrack}
+          time={(60 * 4) / tempo}
+          regions={regions}
+          getRegions={(e) => formatRegion(e)}
+        />
         <section className="flex flex-row gap-4 w-full pb-5">
           <div className="flex flex-col w-full gap-3 p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Secuencia</label>
             <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
               id="file_input"
               type="file"
-              disabled={loading}
+              disabled={songId || loading}
               accept="audio/*"
               onChange={(e) => loadMultitrack(e)}
               multiple={false}/>
@@ -145,33 +157,35 @@ const CreateSong = () => {
                 ]}
               value={singer}
             />
-            <TextField
-              label="BPM"
-              onChange={(e) => setTempo(e.target.value)}
-              type="number"
-              value={tempo}
-              disabled={loading}
-            />
-            <Select
-              onChange={(e) => setTonality(e.target.value)}
-              disabled={loading}
-              label="Tonalidad"
-              value={tonality}
-              options={[
-                { value: null, label: '--Selecciona una nota --'},
-                ...tonalities.map((ton) => ({ value: ton, label: ton }))
-              ]}
-            />
-            <Select
-              disabled={loading}
-              onChange={(e) => setComplement(e.target.value)}
-              label="Alteración"
-              options={[
-                { value: null, label: ''},
-                ...tonalityTypes.map((ton) => ({ value: ton, label: ton }))
-              ]}
-              value={complement}
-            />
+            <div className="flex flex-row gap-10">
+              <TextField
+                label="BPM"
+                onChange={(e) => setTempo(e.target.value)}
+                type="number"
+                value={tempo}
+                disabled={loading}
+              />
+              <Select
+                onChange={(e) => setTonality(e.target.value)}
+                disabled={loading}
+                label="Tonalidad"
+                value={tonality}
+                options={[
+                  { value: null, label: '--Selecciona una nota --'},
+                  ...tonalities.map((ton) => ({ value: ton, label: ton }))
+                ]}
+              />
+              <Select
+                disabled={loading}
+                onChange={(e) => setComplement(e.target.value)}
+                label="Alteración"
+                options={[
+                  { value: null, label: ''},
+                  ...tonalityTypes.map((ton) => ({ value: ton, label: ton }))
+                ]}
+                value={complement}
+              />
+            </div>
           </div>
           <div className="flex flex-col w-full gap-3 p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
             <div className="flex items-center gap-2">
@@ -183,7 +197,7 @@ const CreateSong = () => {
                 type="text"
               />
               <Button
-                disabled={loading}
+                disabled={loading || !resource}
                 onClick={() => {
                   setResource('');
                   setResources((prev) => [...prev, resource])
@@ -203,7 +217,7 @@ const CreateSong = () => {
                 </thead>
                 <tbody>
                   {
-                    resources.map((resource, idx) => (
+                    (resources || []).map((resource, idx) => (
                       <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <td className="w-4 p-4"> {idx + 1}</td>
                         <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-normal dark:text-white">
