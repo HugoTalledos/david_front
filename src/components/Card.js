@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from 'leita-components-ui';
-const Card = ({ setId, setName, songsConfig, setDescription, onDelete }) => {
+const Card = ({ setId, setName, songConfig, setDescription, onDelete }) => {
   const [open, setOpen] = useState(false);
   return (
     <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -27,12 +27,9 @@ const Card = ({ setId, setName, songsConfig, setDescription, onDelete }) => {
       </div>
       <div className="flex flex-col items-center px-4 pb-4">
         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{ setName }</h5>
-        <div className="flex mt-4 md:mt-6 pb-2">
-          <span className="text-md text-gray-500 dark:text-gray-400">Canciones</span>
-          <span className="ml-auto text-md text-gray-500 dark:text-gray-400">30 min</span>
-        </div>
+        <span className="text-md text-gray-500 dark:text-gray-400">Canciones</span>
         <ul className="pl-2 pb-2 max-w-md space-y-1 text-sm text-gray-500 list-disc list-inside dark:text-gray-400">
-          { (songsConfig || []).map(({ songId, songName }) => (<li key={songId}>{songName}</li>)) }
+          { (songConfig || []).map(({ songId, songName }) => (<li key={songId}>{songName}</li>)) }
         </ul>
         <h6 className="text-lg font-bold dark:text-white">Nota: </h6>
         <p className="font-normal text-gray-700 dark:text-gray-400">{ setDescription }</p>
