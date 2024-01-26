@@ -17,7 +17,7 @@ const ViewSetDesk = ({ songList, groupInfo }) => {
         ? <TextView {...selectedSong} onlyLyrics={showLyrics}/>
         : <p>No hay nada</p>
       }
-      <div className="desktop__layout-tools mb-5">
+      <div className="desktop__layout-tools">
         <SongList list={songList} onClickRow={(e) => setSelectedSong(e)}/>
         <SetTools {...selectedSong } 
           details={groupInfo.setDescription}

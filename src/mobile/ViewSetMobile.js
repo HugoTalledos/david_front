@@ -3,6 +3,7 @@ import MusicPlayer from '../components/MusicPlayer/MusicPlayer';
 import { Button, Select } from 'leita-components-ui';
 import TextView from '../components/TextView';
 import SetTools from '../components/SetTools/SetTools';
+import { sessionConfig } from '../utils/Utils';
 
 const ViewSetMobile = ({ groupInfo, songList}) => {
   const [songOptions, setSongOptions] = useState([]);
@@ -10,6 +11,7 @@ const ViewSetMobile = ({ groupInfo, songList}) => {
   const [selectedSong, setSelectedSong] = useState({});
   const [openDrop, setOpenDrop] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
+  const { token } = sessionConfig();
 
   useEffect(() => {
     setSongOptions([...songList.map(({ songName, songId  }) => ({ label: songName, value: songId }) )])
@@ -19,7 +21,7 @@ const ViewSetMobile = ({ groupInfo, songList}) => {
     setSelectedSong(songList.find((item) => item.songId === optionSelected));
   }, [optionSelected]);
 
-  return (<section id="mobile" className="flex flex-col items-center justify-center mt-[70px] h-[100vh] w-full">
+  return (<section id="mobile" className={`flex flex-col ${token ? 'mt-[70px]' : ''} h-full w-full`}>
     <div className='flex items-center'>
       <Select
         label='Canciones'
