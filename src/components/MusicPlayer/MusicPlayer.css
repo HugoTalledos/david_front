@@ -78,7 +78,6 @@
 
   .musicplayer-container {
     flex-direction: column;
-    height: auto;
     gap: 0px;
     padding: 0.7rem 0.5rem 0;
   }
