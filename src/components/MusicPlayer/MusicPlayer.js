@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button, TabItem, Tabs } from 'leita-components-ui';
 import WaveSurfer from 'wavesurfer.js';
+import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm';
 import './MusicPlayer.css';
 
-const MusicPlayer = ({ secuence = [], songTempo: bpm, mobileView }) => {
+const MusicPlayer = ({ secuence = [], songTempo: bpm, regions, mobileView }) => {
   const wavesurfer = useRef(null);
+  const wsRegion = useRef(null);
   const [waveFormLoaded, setWaveFormLoaded] = useState(false);
   const [isPlayed, setIsPlayed] = useState(false);
   const [open, setOpen] = useState(false);
@@ -29,11 +31,37 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm, mobileView }) => {
       barWidth: mobileView ? null: 3,
       cursorWidth: mobileView ? 5: 2,
       dragToSeek: true,
-      height: mobileView ? 11 : 60,
+      height: mobileView ? 30 : 60,
     });
 
     wavesurfer.current.load(secuence[0]);
+
+    wsRegion.current = wavesurfer.current.registerPlugin(RegionsPlugin.create());
   }, [secuence]);
+
+  useEffect(() => {
+    if (!regions || regions.length <= 0) return;
+
+    wavesurfer.current.on('redrawcomplete', () => {
+      regions.forEach(({ color, label, regionId, end, start}) => {
+        wsRegion.current.addRegion({
+          id: regionId,
+          start,
+          end,
+          color,
+          content: label,
+          resize: false,
+          drag: false,
+        });
+      });
+    }, { once: true });
+
+    wsRegion.current.on('region-clicked', (region, e) => {
+      e.stopPropagation();
+      region.play();
+      setIsPlayed(true);
+    });
+  }, [regions]);
 
   
   const playAudio = () => {
@@ -72,7 +100,7 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm, mobileView }) => {
   }
 
 
-  return (<div className='musicplayer-container mb-5 max-[767px]:mb-1 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700'>
+  return (<div className='musicplayer-container max-[767px]:mb-1 max-[767px]:mt-auto border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700'>
     <div className='mediaplayer'>
       <div id={mobileView ? 'waveMobile' : 'waveform'} style={{ display: `${waveFormLoaded ? 'block' : 'none'}`}}></div>
       { !waveFormLoaded && <div className='loaded-song'/> }
