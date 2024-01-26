@@ -57,7 +57,9 @@ const CreateSet = () => {
 
   const saveSet = async () => {
 
-    const body = { title, description, songList };
+    const songIdList = songList.map(({ songId }) => songId);
+
+    const body = { title, description, songList: songIdList };
     if (setId) {
       try {
         await updateSet({ setId, ...body});
