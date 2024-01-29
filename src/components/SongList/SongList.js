@@ -1,6 +1,6 @@
 import './SongList.css';
 const SongList = ({ list, onClickRow = undefined }) => (
-  <div className="songList-layout border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
+  <div className="h-full overflow-auto p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead className="text-xs text-gray-900 uppercase dark:text-gray-400">

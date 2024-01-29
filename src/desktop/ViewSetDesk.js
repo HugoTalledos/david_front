@@ -11,13 +11,13 @@ const ViewSetDesk = ({ songList, groupInfo }) => {
 
   return(<div id="desktop" className="desktop__layout">
     <MusicPlayer {...selectedSong} />
-    <div className="desktop__layout-list">
+    <div className="flex gap-5 h-full overflow-auto">
       {
         selectedSong
         ? <TextView {...selectedSong} onlyLyrics={showLyrics}/>
         : <p>No hay nada</p>
       }
-      <div className="desktop__layout-tools">
+      <div className="flex flex-col h-full gap-5 w-[40%]">
         <SongList list={songList} onClickRow={(e) => setSelectedSong(e)}/>
         <SetTools {...selectedSong } 
           details={groupInfo.setDescription}
