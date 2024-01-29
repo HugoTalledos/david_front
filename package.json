@@ -23,9 +23,17 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start .env",
+    "start": "react-scripts start",
+    "dev": "npm start .env.local",
     "build": "react-scripts build",
+    "build-dev": "deploy\\build.bat dev",
+    "deploy-dev": "deploy\\deploy.bat dev",
+    "build-prod": "deploy\\build.bat prod",
+    "deploy-prod": "deploy\\deploy.bat prod",
+    "lint": "eslint . -c .eslintrc.json --ignore-path .eslintignore ",
+    "fix": "eslint . -c .eslintrc.json --ignore-path .eslintignore --fix",
     "test": "react-scripts test",
+
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

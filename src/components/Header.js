@@ -7,7 +7,7 @@ const Header = () => {
   const { username } = sessionConfig();
 
   return (<>
-    <SideBar title="David">
+    <SideBar title="Iglesia En-hacoré">
       <a href='/'>
         <SideBarItem label={`¡Bienvenido, ${username}!`} icon="hand-wave" />
       </a>

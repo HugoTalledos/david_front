@@ -26,3 +26,6 @@ yarn-error.log*
 /dist
 
 firebase-*.json
+
+deploy/credentials
+deploy/environments
