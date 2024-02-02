@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button, TabItem, Tabs } from 'leita-components-ui';
 import WaveSurfer from 'wavesurfer.js';
-import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.esm';
 import './MusicPlayer.css';
+import { loadTrackFromBlob, loadTrackFromString } from '../../utils/Utils';
 
-const MusicPlayer = ({ secuence = [], songTempo: bpm, regions, mobileView }) => {
+const MusicPlayer = ({ secuence = [], songTempo: bpm, mobileView }) => {
   const wavesurfer = useRef(null);
-  const wsRegion = useRef(null);
   const [waveFormLoaded, setWaveFormLoaded] = useState(false);
   const [isPlayed, setIsPlayed] = useState(false);
   const [open, setOpen] = useState(false);
@@ -34,34 +33,10 @@ const MusicPlayer = ({ secuence = [], songTempo: bpm, regions, mobileView }) => 
       height: mobileView ? 30 : 60,
     });
 
-    wavesurfer.current.load(secuence[0]);
-
-    wsRegion.current = wavesurfer.current.registerPlugin(RegionsPlugin.create());
+    if (typeof secuence[0] === 'object') loadTrackFromBlob(wavesurfer.current, secuence[0]);
+    else loadTrackFromString(wavesurfer.current, secuence[0]);
   }, [secuence]);
 
-  useEffect(() => {
-    if (!regions || regions.length <= 0) return;
-
-    wavesurfer.current.on('redrawcomplete', () => {
-      regions.forEach(({ color, label, regionId, end, start}) => {
-        wsRegion.current.addRegion({
-          id: regionId,
-          start,
-          end,
-          color,
-          content: label,
-          resize: false,
-          drag: false,
-        });
-      });
-    }, { once: true });
-
-    wsRegion.current.on('region-clicked', (region, e) => {
-      e.stopPropagation();
-      region.play();
-      setIsPlayed(true);
-    });
-  }, [regions]);
 
   
   const playAudio = () => {

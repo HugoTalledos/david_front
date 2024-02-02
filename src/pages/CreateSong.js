@@ -1,16 +1,16 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
+import { Button, Select, TextField } from "leita-components-ui";
+import ReactQuill from 'react-quill';
+import MusicPlayer from '../components/MusicPlayer/MusicPlayer';
 import NotificationContext from '../context/notification-context';
 import SingerApi from "../services/Singer";
 import { createSong, updateSong, getSongById } from "../services/Song";
 import { loadSound, markToHTML } from '../utils/Utils';
 import { tonalities, tonalityTypes } from "../utils/constants";
 
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { Button, Select, TextField } from "leita-components-ui";
 import { v4 } from "uuid";
-import PreviewTrack from "../components/PreviewTrack/PreviewTrack";
 
 const CreateSong = () => {
   const [songId] = useState(useParams().songId);
@@ -26,7 +26,6 @@ const CreateSong = () => {
   const [chords, setChords] = useState('');
   const [multitrack, setMultitrack] = useState('');
   const [loading, setLoading] = useState(false);
-  const [regions, setRegions] = useState([]);
 
   const { dispatchData } = useContext(NotificationContext);
 
@@ -54,7 +53,7 @@ const CreateSong = () => {
         setSinger(song.singerId);
         setTonality(ton);
         setComplement(comple);
-        setRegions(song.regions);
+        setLyrics(song.songLyrics);
         setMultitrack(song.secuence[0])
       })
       .catch(() => dispatchData({ type: 'danger', text: 'Error consultando el set. intente mas tarde' }))
@@ -79,7 +78,6 @@ const CreateSong = () => {
       songLyrics: lyrics,
       songChords:chords,
       secuence: [url],
-      regions,
     }
 
     let promise = songId ? updateSong(body) : createSong(body);
@@ -101,7 +99,7 @@ const CreateSong = () => {
     .catch(() =>dispatchData({ type: 'danger', text: 'Ocurrio un error, por favor intenta más tarde.' }))
     .finally(() => setLoading(false));
 
-  };
+  }
 
   const loadMultitrack = async (e) => {
     const { files = [] } = e.target;
@@ -113,10 +111,6 @@ const CreateSong = () => {
     const textoLimpio = textOriginal.replace(/<p><u>.*?<\/u><\/p>/g, '');
     setLyrics(textoLimpio);
   };
-
-  const formatRegion = (listRegion) => {
-    setRegions(listRegion.map(({ id, color, start, end, content }) => ({ regionId: id, color, start, end, label: content.outerText })))
-  }
 
   return(<>
       <div className="p-4 h-full overflow-auto">
@@ -130,12 +124,7 @@ const CreateSong = () => {
             type="dark-outline"
           />
         </div>
-        <PreviewTrack
-          track={multitrack}
-          time={(60 * 4) / tempo}
-          regions={regions}
-          getRegions={(e) => formatRegion(e)}
-        />
+        { multitrack && (<MusicPlayer secuence={[multitrack]}/>) }
         <section className="flex flex-row gap-4 w-full pb-5">
           <div className="flex flex-col w-full gap-3 p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Secuencia</label>
@@ -242,7 +231,12 @@ const CreateSong = () => {
           <div className="grid gap-6 mb-6 md:grid-cols-2">
             <div>
               <label htmlFor="chords" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Letra con acordes</label>
-              <ReactQuill theme="snow" value={chords} onChange={(e) => formatLyrics(e)} />
+              <ReactQuill
+                theme="snow"
+                value={chords}
+                onChange={(e) => formatLyrics(e)}
+                preserveWhitespace
+              />
             </div>
             <div>
               <label htmlFor="chords" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Letra</label>

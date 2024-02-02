@@ -41,8 +41,21 @@ export const loadSound = (file, id) => {
 export const roundTimeMarker = (time, multiplo) => {
     const multiploInferior = Math.floor(time / multiplo) * multiplo;
     const multiploSuperior = multiploInferior + multiplo;
-    if (Math.abs(time - multiploInferior) < Math.abs(time - multiploSuperior)) {
-      return multiploInferior;
-    }
-    return multiploSuperior;
+
+    return (Math.abs(time - multiploInferior) < Math.abs(time - multiploSuperior)) ? multiploInferior : multiploSuperior;
 }
+
+export const bpmToSeconds = (bpm) => (60 / bpm);
+
+export const calculateCompas = (bpm, compas = 4) => ((60 * compas) / bpm);
+
+export const loadTrackFromBlob = async (wavesurferInstance, trackBlob) => {
+  const reader = new FileReader();
+    reader.onload = async (event) => {
+      let blob = new window.Blob([new Uint8Array(event.target.result)], { type: "audio/mpeg"});
+      wavesurferInstance.loadBlob(blob);
+    };
+    reader.readAsArrayBuffer(trackBlob);
+}
+
+export const loadTrackFromString = (wavesurferInstance, track) =>  wavesurferInstance.load(track);
